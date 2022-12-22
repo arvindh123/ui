@@ -76,6 +76,7 @@ export class ThingsService {
       .set('offset', filters.offset.toString())
       .set('limit', filters.limit.toString())
       .set('order', 'name')
+      .set('shared', 'true')
       .set('dir', 'asc');
 
     if (filters.type) {

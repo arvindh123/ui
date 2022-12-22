@@ -42,9 +42,13 @@ export class TokenInterceptor implements HttpInterceptor {
           !request.url.startsWith(environment.bootstrapUrl) &&
           !request.url.startsWith(environment.browseUrl)
         ) {
+          let tokenValue = token.getValue();
+          if (request.url.startsWith(environment.usersUrl)) {
+            tokenValue = bearerSchemePrefix + tokenValue;
+          }
           request = request.clone({
             setHeaders: {
-              'Authorization': bearerSchemePrefix + token.getValue(),
+              'Authorization': tokenValue,
             },
           });
         }
