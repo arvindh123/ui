@@ -26,8 +26,8 @@ export class ChannelsDetailsComponent implements OnInit {
   thingsToConnect: string[] = [];
   thingsToDisconnect: string[] = [];
 
-  user_ids: string = "";
-  actions: string = "";
+  user_ids: string = '';
+  actions: string = '';
 
   editorOptions: JsonEditorOptions;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
@@ -45,8 +45,8 @@ export class ChannelsDetailsComponent implements OnInit {
   ngOnInit() {
     const chanID = this.route.snapshot.paramMap.get('id');
 
-    this.user_ids = "";
-    this.actions = "";
+    this.user_ids = '';
+    this.actions = '';
     this.channelsService.getChannel(chanID).subscribe(
       (ch: Channel) => {
         this.channel = ch;
@@ -83,15 +83,15 @@ export class ChannelsDetailsComponent implements OnInit {
     }
   }
   onShare() {
-    const share:Share = {
-      user_ids : this.user_ids.replace(" ", "").split(","),
-      relations: this.actions.replace(" ", "").split(",")
-    }
+    const share: Share = {
+      user_ids: this.user_ids.replace(' ', '').split(','),
+      relations: this.actions.replace(' ', '').split(','),
+    };
     this.channelsService.shareChannel(this.channel, share).subscribe((resp: any) => {
-      this.user_ids = ""
-      this.actions = ""
-      this.notificationsService.success('shared successfully ','');
-    })
+      this.user_ids = '';
+      this.actions = '';
+      this.notificationsService.success('shared successfully ', '');
+    }; )
   }
   onDisconnect() {
     this.channelsService.disconnectThings([this.channel.id], this.thingsToDisconnect).subscribe(

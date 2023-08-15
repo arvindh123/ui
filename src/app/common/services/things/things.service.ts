@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 
 import { environment } from 'environments/environment';
-import { Thing, PageFilters,Share } from 'app/common/interfaces/mainflux.interface';
+import { Thing, PageFilters, Share } from 'app/common/interfaces/mainflux.interface';
 import { NotificationsService } from 'app/common/services/notifications/notifications.service';
 
 const defLimit: number = 10;

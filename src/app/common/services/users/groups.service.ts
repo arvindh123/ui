@@ -242,7 +242,7 @@ export class UserGroupsService {
 
     let params = new HttpParams()
       .set('offset', offset.toString())
-      .set('level',"5")
+      .set('level', '5')
       .set('limit', limit.toString());
 
     if (name) {
@@ -266,12 +266,12 @@ export class UserGroupsService {
 
   getMembersByType(groupID?: string, memberType?: string): any {
     switch (memberType) {
-      case "users":
+      case 'users':
         return this.getMembers(groupID);
-      case "things":
+      case 'things':
         return this.getThings(groupID);
-      case "channels":
-        return this.getChannels(groupID)
+      case 'channels':
+        return this.getChannels(groupID);
     }
   }
   getMembers(groupID?: string): any {

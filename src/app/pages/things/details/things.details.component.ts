@@ -54,8 +54,8 @@ export class ThingsDetailsComponent implements OnInit {
 
   messages = [];
 
-  actions: string = "";
-  user_ids: string = "";
+  actions: string = '';
+  user_ids: string = '';
 
   editorOptions: JsonEditorOptions;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
@@ -78,8 +78,8 @@ export class ThingsDetailsComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
 
-    this.actions ="";
-    this.user_ids ="";
+    this.actions = '';
+    this.user_ids = '';
 
     this.thingsService.getThing(id).subscribe(
       (th: Thing) => {
@@ -189,15 +189,15 @@ export class ThingsDetailsComponent implements OnInit {
   }
 
   onShare() {
-    const share :Share = {
-      user_ids : this.user_ids.replace(" ", "").split(","),
-      relations: this.actions.replace(" ", "").split(",")
-    }
+    const share: Share = {
+      user_ids: this.user_ids.replace(' ', '').split(','),
+      relations: this.actions.replace(' ', '').split(','),
+    };
     this.thingsService.shareThing(this.thing, share).subscribe((resp: any) => {
-      this.user_ids = ""
-      this.actions = ""
-      this.notificationsService.success('shared successfully ','');
-    })
+      this.user_ids = '';
+      this.actions = '';
+      this.notificationsService.success('shared successfully ', '');
+    }; )
   }
   findConnectedChans() {
     this.thingsService.connectedChannels(this.thing.id, this.connChansPage.offset,

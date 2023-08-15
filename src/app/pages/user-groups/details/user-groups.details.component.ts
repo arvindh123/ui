@@ -17,8 +17,8 @@ import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 })
 export class UserGroupsDetailsComponent implements OnInit {
 
-  memberTypes: string[] = ["users","things","channels"]
-  selectedMemberType: string = "users";
+  memberTypes: string[] = ['users', 'things', 'channels'];
+  selectedMemberType: string = 'users';
   group: UserGroup = {};
 
   membersLoading: boolean = false ;
@@ -46,7 +46,7 @@ export class UserGroupsDetailsComponent implements OnInit {
     keys: ['id', 'name', 'checkbox'],
   };
 
-  tableConfig: TableConfig = {}
+  tableConfig: TableConfig = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -73,7 +73,7 @@ export class UserGroupsDetailsComponent implements OnInit {
   }
 
   onChangeMemberType(event: any) {
-    this.selectedMemberType=event;
+    this.selectedMemberType = event;
     this.getMembers();
   }
 
@@ -89,13 +89,15 @@ export class UserGroupsDetailsComponent implements OnInit {
 
   setTableConfig() {
     switch (this.selectedMemberType) {
-      case "users":
+      case 'users' :
         this.tableConfig = this.usersTableConfig;
         return;
-      case "things":
+      case 'things' :
         this.tableConfig = this.thingsTableConfig;
-      case "channels":
+        return;
+      case 'channels' :
         this.tableConfig = this.channelsTableConfig;
+        return;
     }
   }
 
@@ -104,18 +106,18 @@ export class UserGroupsDetailsComponent implements OnInit {
     this.membersPage = {};
     this.toAssign = [];
     this.toUnassign = [];
-    this.tableConfig = {}
+    this.tableConfig = {};
   }
 
   setUnassignedMember() {
     switch (this.selectedMemberType) {
-      case "users":
+      case 'users':
         this.getUsers();
         return;
-      case "things":
+      case 'things':
         this.getThings();
         return;
-      case "channels":
+      case 'channels':
         this.getChannels();
         return;
     }
@@ -125,13 +127,13 @@ export class UserGroupsDetailsComponent implements OnInit {
     this.userGroupsService.getMembersByType(this.group.id, this.selectedMemberType ).subscribe(
       resp => {
         switch (this.selectedMemberType) {
-          case "users":
+          case 'users':
             this.membersPage.rows = resp.users;
             break;
-          case "things":
+          case 'things':
             this.membersPage.rows = resp.things;
             break;
-          case "channels":
+          case 'channels':
             this.membersPage.rows = resp.channels;
             break;
         }
@@ -145,7 +147,7 @@ export class UserGroupsDetailsComponent implements OnInit {
             this.unassignedPage.rows = this.unassignedPage.rows
             .filter((u: any) => u.id !== m.id) || [];
           });
-          this.unassignedPage.total = this.unassignedPage.rows.length || 0
+          this.unassignedPage.total = this.unassignedPage.rows.length || 0 ;
         }
       },
     );
