@@ -4,6 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { UserGroup, User, TableConfig, TablePage } from 'app/common/interfaces/mainflux.interface';
 import { UsersService } from 'app/common/services/users/users.service';
 import { UserGroupsService } from 'app/common/services/users/groups.service';
+import { ThingsService } from 'app/common/services/things/things.service';
+import { ChannelsService } from 'app/common/services/channels/channels.service';
 import { NotificationsService } from 'app/common/services/notifications/notifications.service';
 
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
@@ -14,25 +16,44 @@ import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
   styleUrls: ['./user-groups.details.component.scss'],
 })
 export class UserGroupsDetailsComponent implements OnInit {
+
+  memberTypes: string[] = ["users","things","channels"]
+  selectedMemberType: string = "users";
   group: UserGroup = {};
+
+  membersLoading: boolean = false ;
+
   membersPage: TablePage = {};
   unassignedPage: TablePage = {};
+  toAssign: string[] = [];
+  toUnassign: string[] = [];
 
   editorOptions: JsonEditorOptions;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
 
-  usersToAssign: string[] = [];
-  usersToUnassign: string[] = [];
-
-  tableConfig: TableConfig = {
+  usersTableConfig: TableConfig = {
     colNames: ['Email', 'ID', 'checkbox'],
     keys: ['email', 'id', 'checkbox'],
   };
+
+  thingsTableConfig: TableConfig = {
+    colNames: ['ID', 'Name', 'checkbox'],
+    keys: ['id', 'name', 'checkbox'],
+  };
+
+  channelsTableConfig: TableConfig = {
+    colNames: ['ID', 'Name', 'checkbox'],
+    keys: ['id', 'name', 'checkbox'],
+  };
+
+  tableConfig: TableConfig = {}
 
   constructor(
     private route: ActivatedRoute,
     private usersService: UsersService,
     private userGroupsService: UserGroupsService,
+    private thingsService: ThingsService,
+    private channelsService: ChannelsService,
     private notificationsService: NotificationsService,
   ) {
     this.editorOptions = new JsonEditorOptions();
@@ -51,19 +72,69 @@ export class UserGroupsDetailsComponent implements OnInit {
     );
   }
 
-  getMembers() {
-    this.usersService.getUsers().subscribe(
-      (resp: any) => {
-        this.unassignedPage.rows = resp.users;
-        this.unassignedPage.total = resp.total;
-        this.unassignedPage.offset = resp.offset;
-        this.unassignedPage.limit = resp.limit;
-      },
-    );
+  onChangeMemberType(event: any) {
+    this.selectedMemberType=event;
+    this.getMembers();
+  }
 
-    this.userGroupsService.getMembers(this.group.id).subscribe(
+  getMembers() {
+    this.membersLoading = true;
+    this.resetVariables();
+    this.setTableConfig();
+    this.setUnassignedMember();
+    this.setAssignedMember();
+    this.membersLoading = false;
+  }
+
+
+  setTableConfig() {
+    switch (this.selectedMemberType) {
+      case "users":
+        this.tableConfig = this.usersTableConfig;
+        return;
+      case "things":
+        this.tableConfig = this.thingsTableConfig;
+      case "channels":
+        this.tableConfig = this.channelsTableConfig;
+    }
+  }
+
+  resetVariables() {
+    this.unassignedPage = {};
+    this.membersPage = {};
+    this.toAssign = [];
+    this.toUnassign = [];
+    this.tableConfig = {}
+  }
+
+  setUnassignedMember() {
+    switch (this.selectedMemberType) {
+      case "users":
+        this.getUsers();
+        return;
+      case "things":
+        this.getThings();
+        return;
+      case "channels":
+        this.getChannels();
+        return;
+    }
+  }
+
+  setAssignedMember() {
+    this.userGroupsService.getMembersByType(this.group.id, this.selectedMemberType ).subscribe(
       resp => {
-        this.membersPage.rows = resp.users;
+        switch (this.selectedMemberType) {
+          case "users":
+            this.membersPage.rows = resp.users;
+            break;
+          case "things":
+            this.membersPage.rows = resp.things;
+            break;
+          case "channels":
+            this.membersPage.rows = resp.channels;
+            break;
+        }
         this.membersPage.total = resp.total;
         this.membersPage.offset = resp.offset;
         this.membersPage.limit = resp.limit;
@@ -72,30 +143,31 @@ export class UserGroupsDetailsComponent implements OnInit {
           // Remove members from available Users
           this.membersPage.rows.forEach((m: any) => {
             this.unassignedPage.rows = this.unassignedPage.rows
-            .filter((u: any) => u.id !== m.id);
+            .filter((u: any) => u.id !== m.id) || [];
           });
+          this.unassignedPage.total = this.unassignedPage.rows.length || 0
         }
       },
     );
   }
 
   onAssign() {
-    this.userGroupsService.assignUser(this.group.id, this.usersToAssign).subscribe(
+    this.userGroupsService.assignMembers(this.group.id, this.toAssign, this.selectedMemberType).subscribe(
       resp => {
-        this.notificationsService.success('Successfully assigned User(s) to Group', '');
+        this.notificationsService.success(`Successfully assigned ${this.selectedMemberType}(s) to Group`, '');
         this.getMembers();
       },
     );
 
-    if (this.usersToAssign.length === 0) {
-      this.notificationsService.warn('User(s) must be provided', '');
+    if (this.toAssign.length === 0) {
+      this.notificationsService.warn(`${this.selectedMemberType}(s) must be provided`, '');
     }
   }
 
   onUnassign() {
-    this.userGroupsService.unassignUser(this.group.id, this.usersToUnassign).subscribe(
+    this.userGroupsService.unassignMembers(this.group.id, this.toUnassign).subscribe(
       resp => {
-        this.notificationsService.success('Successfully unassigned User(s) from Group', '');
+        this.notificationsService.success(`Successfully unassigned ${this.selectedMemberType}(s) from Group`, '');
         this.getMembers();
       },
     );
@@ -122,11 +194,44 @@ export class UserGroupsDetailsComponent implements OnInit {
   }
 
   onCheckboxUnassigned(rows: string[]) {
-    this.usersToAssign = rows;
+    this.toAssign = rows;
   }
 
   onCheckboxMembers(rows: string[]) {
-    this.usersToUnassign = rows;
+    this.toUnassign = rows;
+  }
+
+  getUsers() {
+    this.usersService.getUsers().subscribe(
+      (resp: any) => {
+        this.unassignedPage.rows = resp.users;
+        this.unassignedPage.total = resp.total;
+        this.unassignedPage.offset = resp.offset;
+        this.unassignedPage.limit = resp.limit;
+      },
+    );
+  }
+  getThings() {
+    this.thingsService.getThings({}).subscribe(
+      (resp: any) => {
+        this.unassignedPage.rows = resp.things;
+        this.unassignedPage.total = resp.total;
+        this.unassignedPage.offset = resp.offset;
+        this.unassignedPage.limit = resp.limit;
+      },
+    );
+
+  }
+
+  getChannels() {
+    this.channelsService.getChannels({}).subscribe(
+      (resp: any) => {
+        this.unassignedPage.rows = resp.channels;
+        this.unassignedPage.total = resp.total;
+        this.unassignedPage.offset = resp.offset;
+        this.unassignedPage.limit = resp.limit;
+      },
+    );
   }
 
   onEdit() {

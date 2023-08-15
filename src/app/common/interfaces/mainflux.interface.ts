@@ -159,3 +159,8 @@ export interface TablePage {
   total?: number;
   rows?: Object[];
 }
+
+export interface Share {
+  user_ids?: string[];
+  relations?: string[];
+}

@@ -7,6 +7,14 @@
     "target": "http://localhost:8180",
     "secure": false
   },
+  "/groups/things/*": {
+    "target": "http://localhost:8182",
+    "secure": false
+  },
+  "/groups/channels/*": {
+    "target": "http://localhost:8182",
+    "secure": false
+  },
   "/groups/users/*": {
     "target": "http://localhost:8180",
     "secure": false,

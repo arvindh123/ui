@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ChannelsService } from 'app/common/services/channels/channels.service';
 import { NotificationsService } from 'app/common/services/notifications/notifications.service';
-import { Channel, Thing, TableConfig, TablePage } from 'app/common/interfaces/mainflux.interface';
+import { Channel, Thing, TableConfig, TablePage, Share } from 'app/common/interfaces/mainflux.interface';
 
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 
@@ -26,6 +26,9 @@ export class ChannelsDetailsComponent implements OnInit {
   thingsToConnect: string[] = [];
   thingsToDisconnect: string[] = [];
 
+  user_ids: string = "";
+  actions: string = "";
+
   editorOptions: JsonEditorOptions;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
 
@@ -42,6 +45,8 @@ export class ChannelsDetailsComponent implements OnInit {
   ngOnInit() {
     const chanID = this.route.snapshot.paramMap.get('id');
 
+    this.user_ids = "";
+    this.actions = "";
     this.channelsService.getChannel(chanID).subscribe(
       (ch: Channel) => {
         this.channel = ch;
@@ -77,7 +82,17 @@ export class ChannelsDetailsComponent implements OnInit {
       this.notificationsService.warn('Thing(s) must be provided', '');
     }
   }
-
+  onShare() {
+    const share:Share = {
+      user_ids : this.user_ids.replace(" ", "").split(","),
+      relations: this.actions.replace(" ", "").split(",")
+    }
+    this.channelsService.shareChannel(this.channel, share).subscribe((resp: any) => {
+      this.user_ids = ""
+      this.actions = ""
+      this.notificationsService.success('shared successfully ','');
+    })
+  }
   onDisconnect() {
     this.channelsService.disconnectThings([this.channel.id], this.thingsToDisconnect).subscribe(
       resp => {

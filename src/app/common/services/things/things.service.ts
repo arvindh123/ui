@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 
 import { environment } from 'environments/environment';
-import { Thing, PageFilters } from 'app/common/interfaces/mainflux.interface';
+import { Thing, PageFilters,Share } from 'app/common/interfaces/mainflux.interface';
 import { NotificationsService } from 'app/common/services/notifications/notifications.service';
 
 const defLimit: number = 10;
@@ -136,6 +136,23 @@ export class ThingsService {
         },
       );
   }
+
+  shareThing(thing: Thing, share: Share) {
+    return this.http.post(`${environment.thingsUrl}/${thing.id}/share`, share, { observe: 'response' })
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to share Thing',
+            `Error: ${err.status} - ${err.statusText}`);
+          return throwError(err);
+        },
+      );
+  }
+
 
   connectedChannels(thingID: string, offset?: number, limit?: number) {
     offset = offset || 0;

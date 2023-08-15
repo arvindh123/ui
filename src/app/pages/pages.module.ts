@@ -10,6 +10,7 @@ import {
   NbCheckboxModule,
   NbListModule,
   NbTabsetModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../@theme/theme.module';
@@ -58,6 +59,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     NbCheckboxModule,
     NbListModule,
     NbTabsetModule,
+    NbSpinnerModule,
     NgJsonEditorModule,
   ],
   exports: [

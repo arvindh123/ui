@@ -7,7 +7,7 @@ import { ChannelsService } from 'app/common/services/channels/channels.service';
 import { CertsService } from 'app/common/services/certs/certs.service';
 import { MessagesService } from 'app/common/services/messages/messages.service';
 import { NotificationsService } from 'app/common/services/notifications/notifications.service';
-import { Thing, Channel, TableConfig, TablePage, SenMLRec } from 'app/common/interfaces/mainflux.interface';
+import { Thing, Channel, TableConfig, TablePage, SenMLRec, Share } from 'app/common/interfaces/mainflux.interface';
 import { ThingsCertComponent } from '../cert/things.cert.component';
 import { CertReq } from 'app/common/interfaces/certs.interface';
 
@@ -54,6 +54,9 @@ export class ThingsDetailsComponent implements OnInit {
 
   messages = [];
 
+  actions: string = "";
+  user_ids: string = "";
+
   editorOptions: JsonEditorOptions;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
 
@@ -69,10 +72,14 @@ export class ThingsDetailsComponent implements OnInit {
     this.editorOptions = new JsonEditorOptions();
     this.editorOptions.mode = 'code';
     this.editorOptions.mainMenuBar = false;
+
   }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+
+    this.actions ="";
+    this.user_ids ="";
 
     this.thingsService.getThing(id).subscribe(
       (th: Thing) => {
@@ -181,6 +188,17 @@ export class ThingsDetailsComponent implements OnInit {
     this.findDisconnectedChans();
   }
 
+  onShare() {
+    const share :Share = {
+      user_ids : this.user_ids.replace(" ", "").split(","),
+      relations: this.actions.replace(" ", "").split(",")
+    }
+    this.thingsService.shareThing(this.thing, share).subscribe((resp: any) => {
+      this.user_ids = ""
+      this.actions = ""
+      this.notificationsService.success('shared successfully ','');
+    })
+  }
   findConnectedChans() {
     this.thingsService.connectedChannels(this.thing.id, this.connChansPage.offset,
       this.connChansPage.limit).subscribe(

@@ -32,9 +32,19 @@
   </div>
 
   <div class="col-md-6">
+
+
     <nb-card size="large">
-      <nb-card-body style="padding:0; margin:0;">
-        <nb-tabset>
+      <nb-card-body style="padding:0.5rem; margin:0;" [nbSpinner]="membersLoading" nbSpinnerStatus="danger">
+        <nb-card-header>
+          List Group Members Type :
+          <nb-select placeholder="Select members type"  (selectedChange)="onChangeMemberType($event)" [selected]="selectedMemberType"   size="tiny">
+            <nb-option *ngFor="let memberType of this.memberTypes" [value]="memberType">
+              {{memberType}}
+            </nb-option>
+          </nb-select>
+        </nb-card-header>
+        <nb-tabset >
           <nb-tab tabTitle="Unassigned ({{ unassignedPage.total }})">
             <nb-card size="medium" style="padding:0; margin:0;">
               <nb-card-body>
@@ -79,4 +89,3 @@
       </nb-card-body>
     </nb-card>
   </div>
-</div>

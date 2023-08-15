@@ -64,6 +64,104 @@ export class UserGroupsService {
       );
   }
 
+  unassignThings(groupID: string, userIDs: string[]): any {
+    const unassignReq = {
+      members: userIDs,
+    };
+    return this.http.request('delete', `${environment.groupsUrl}/${groupID}/members`, {body: unassignReq})
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to Unassing User from Group',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
+  assignThings(groupID: string, userIDs: string[]): any {
+    const assignReq = {
+      members: userIDs,
+      type: 'things',
+    };
+    return this.http.post(`${environment.groupsUrl}/${groupID}/members`, assignReq)
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to Assign things to Group',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
+  unassignChannels(groupID: string, userIDs: string[]): any {
+    const unassignReq = {
+      members: userIDs,
+    };
+    return this.http.request('delete', `${environment.groupsUrl}/${groupID}/members`, {body: unassignReq})
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to Unassing User from Group',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
+  assignChannels(groupID: string, userIDs: string[]): any {
+    const assignReq = {
+      members: userIDs,
+      type: 'channels',
+    };
+    return this.http.post(`${environment.groupsUrl}/${groupID}/members`, assignReq)
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to Assign channels to Group',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
+  assignMembers(groupID: string, memberIDs: string[], memberType: string): any {
+    const assignReq = {
+      members: memberIDs,
+      type: memberType,
+    };
+    return this.http.post(`${environment.groupsUrl}/${groupID}/members`, assignReq)
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to Assing User to Group',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
   assignUser(groupID: string, userIDs: string[]): any {
     const assignReq = {
       members: userIDs,
@@ -102,6 +200,25 @@ export class UserGroupsService {
         },
       );
   }
+  unassignMembers(groupID: string, memberIDs: string[]): any {
+    const unassignReq = {
+      members: memberIDs,
+    };
+    return this.http.request('delete', `${environment.groupsUrl}/${groupID}/members`, {body: unassignReq})
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to Unassing User from Group',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
 
   getGroup(groupID: string): any {
     return this.http.get(`${environment.groupsUrl}/${groupID}`)
@@ -125,6 +242,7 @@ export class UserGroupsService {
 
     let params = new HttpParams()
       .set('offset', offset.toString())
+      .set('level',"5")
       .set('limit', limit.toString());
 
     if (name) {
@@ -146,6 +264,16 @@ export class UserGroupsService {
       );
   }
 
+  getMembersByType(groupID?: string, memberType?: string): any {
+    switch (memberType) {
+      case "users":
+        return this.getMembers(groupID);
+      case "things":
+        return this.getThings(groupID);
+      case "channels":
+        return this.getChannels(groupID)
+    }
+  }
   getMembers(groupID?: string): any {
     return this.http.get(`${environment.groupsUrl}/users/${groupID}`)
       .map(
@@ -156,6 +284,38 @@ export class UserGroupsService {
       .catch(
         err => {
           this.notificationsService.error('Failed to fetch Group members',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
+  getThings(groupID?: string): any {
+    return this.http.get(`${environment.groupsUrl}/things/${groupID}`)
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to fetch Group things',
+            `Error: ${err.status} - ${err.statusText}`);
+            return throwError(err);
+        },
+      );
+  }
+
+  getChannels(groupID?: string): any {
+    return this.http.get(`${environment.groupsUrl}/channels/${groupID}`)
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to fetch Group channels',
             `Error: ${err.status} - ${err.statusText}`);
             return throwError(err);
         },

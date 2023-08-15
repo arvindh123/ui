@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 
 import { environment } from 'environments/environment';
-import { Channel, PageFilters } from 'app/common/interfaces/mainflux.interface';
+import { Channel, PageFilters, Share } from 'app/common/interfaces/mainflux.interface';
 import { NotificationsService } from 'app/common/services/notifications/notifications.service';
 
 const defLimit: number = 10;
@@ -113,6 +113,22 @@ export class ChannelsService {
           this.notificationsService.error('Failed to edit Channel',
             `Error: ${err.status} - ${err.statusText}`);
             return throwError(err);
+        },
+      );
+  }
+
+  shareChannel(channel: Channel, share: Share) {
+    return this.http.post(`${environment.channelsUrl}/${channel.id}/share`, share, { observe: 'response' })
+      .map(
+        resp => {
+          return resp;
+        },
+      )
+      .catch(
+        err => {
+          this.notificationsService.error('Failed to share channel',
+            `Error: ${err.status} - ${err.statusText}`);
+          return throwError(err);
         },
       );
   }

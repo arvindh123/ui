@@ -13,6 +13,24 @@
       </nb-card-body>
     </nb-card>
 
+    <nb-card size="tiny">
+      <nb-card-header class="card-header">
+        Shared with
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row"  style="padding: 1rem;">
+          <div class="col-md-2 form-key"> User ID: </div><div class="col-md-10" > <input type="textbox" [(ngModel)]="user_ids"/>  </div>
+        </div>
+        <div class="row"  style="padding: 1rem;">
+          <div class="col-md-2 form-key"> Action: </div><div class="col-md-10"> <input type="textbox" [(ngModel)]="actions"/> </div>
+        </div>
+        <button nbButton size="tiny" class="button-blue button-right"
+                (click)="onShare()">
+          Share
+        </button>
+      </nb-card-body>
+    </nb-card>
+
     <nb-card size="small">
       <nb-card-header class="card-header">
         Metadata
